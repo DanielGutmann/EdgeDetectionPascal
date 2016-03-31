@@ -87,11 +87,15 @@ def isoArray(dim,array,treshold):
 	#print edge
 	return edge
 
-def exists(dim,array,element):
+def evalPixel(dim,array,element):
 	for i in range(dim):
-		if(element == array[i]):
-			return True
-	return False
+		(nHits,y,x) = array[i]
+		(nHitsEl,yEl,xEl) = element
+		if(y == yEl and x == xEl):
+			array[i] = ((nHits+1,y,x))
+			return "incremented"
+	array.append(element)
+	return "added"
 #threshold pozitivan broj !
 def analyser(array,threshold):
 	brojac = 0
@@ -145,34 +149,22 @@ def signalSupremum(signalArray):
 
 def test3():
     array = []
-    array.append(20);
-    array.append(145);
-    array.append(155);
-    array.append(140);
-    print(signalSupremum(array))
-    print("==================")   
-    print(FastDescretePascal(2,[255,250]))
-    print(FastDescretePascal(2,[250,20]))
-    print(FastDescretePascal(2,[20,15]))    
-    print("==================")
-    print("Niz:")
+    triple = (1,2,3)
+    triple2 = (1,4,5)
+    triple3 = (1,1,2)
+    array.append(triple)
+    array.append(triple2)
+    array.append(triple3)
+
+    print(exists(len(array),array,(1,1,2)))
+    print(exists(len(array),array,(1,5,6)))
+    print(exists(len(array),array,(1,1,2)))
+    print(exists(len(array),array,(1,1,2)))
+    print(exists(len(array),array,(1,1,2)))
+    print(exists(len(array),array,(1,1,2)))
+
     print(array)
-    inversArray = inverseSignal(array)
-    print("Inverzan niz:")
-    print(inversArray)
-    print("Spektar niza:")
-    matrixP = pascalTransformMatrix(4)
-    #spektar = FastDescretePascal(len(array),array)
-    spektar = np.dot(matrixP,array)
-    print(spektar)
-    print("Spektar inverznog:")
-    #invSpektar = FastDescretePascal(len(inversArray),inversArray)
-    invSpektar = np.dot(matrixP,inversArray)
-    print(invSpektar)    
-    #test
-    PascalMat = pascalTransformMatrix(4)
-    print("test za inverznog:")
-    print(np.dot(PascalMat,inversArray))	
+
 def test2():
 	matrica = pascalTransformMatrix(4)
 	array = []
@@ -333,7 +325,7 @@ def signal_processing(signal,threshold,matrix):
 		indexOfEdgePoint = apsoluteMax(4,spectar)
 		return indexOfEdgePoint
 	return -1
-def main(threshold,image):
+def main(threshold,image,hitCount):
 	
 	#imeSlike = 'photographer.jpg'
 	#threshold = 20
@@ -413,46 +405,38 @@ def main(threshold,image):
 			index = signal_processing(tempRowRight,threshold,Pmatrix)
 			#print(index)
 			if(index != -1):
-				tupleVertical = (i,j+index)
-				if exists(len(tupleArray),tupleArray,tupleVertical) is False:
-					tupleArray.append(tupleVertical)
+				tupleVertical = (1,i,j+index)
+				evalPixel(len(tupleArray),tupleArray,tupleVertical)
 			#print(index)
 			index = signal_processing(tempColDown,threshold,Pmatrix)
 			if(index != -1):
-				tupleHorizontal = (i+index,j)
-				if exists(len(tupleArray),tupleArray,tupleHorizontal) is False:
-					tupleArray.append(tupleHorizontal)
+				tupleHorizontal = (1,i+index,j)
+				evalPixel(len(tupleArray),tupleArray,tupleHorizontal)
 			#print(index)
 			index = signal_processing(tempDiagBottomRight,threshold,Pmatrix)
 			if(index != -1):
-				tupleDiagonal = (i+index,j+index)
-				if exists(len(tupleArray),tupleArray,tupleDiagonal) is False:
-					tupleArray.append(tupleDiagonal)
+				tupleDiagonal = (1,i+index,j+index)
+				evalPixel(len(tupleArray),tupleArray,tupleDiagonal)
 			index = signal_processing(tempDiagBottomLeft,threshold,Pmatrix)
 			if(index != -1):
-				tupleDiagonalBL = (i+index,j-index)
-				if exists(len(tupleArray),tupleArray,tupleDiagonalBL) is False:
-					tupleArray.append(tupleDiagonalBL)
+				tupleDiagonalBL = (1,i+index,j-index)
+				evalPixel(len(tupleArray),tupleArray,tupleDiagonalBL)
 			index = signal_processing(tempRowLeft,threshold,Pmatrix)
 			if(index != -1):
-				tupleRowLFT = (i,j-index)
-				if exists(len(tupleArray),tupleArray,tupleRowLFT) is False:
-					tupleArray.append(tupleRowLFT)
+				tupleRowLFT = (1,i,j-index)
+				evalPixel(len(tupleArray),tupleArray,tupleRowLFT)
 			index = signal_processing(tempDiagTopLeft,threshold,Pmatrix)
 			if(index != -1):
-				tupleDiagTL = (i-index,j-index)
-				if exists(len(tupleArray),tupleArray,tupleDiagTL) is False:
-					tupleArray.append(tupleDiagTL)
+				tupleDiagTL = (1,i-index,j-index)
+				evalPixel(len(tupleArray),tupleArray,tupleDiagTL)
 			index = signal_processing(tempColUp,threshold,Pmatrix)
 			if(index != -1):
-				tupleColUp = (i-index,j)
-				if exists(len(tupleArray),tupleArray,tupleColUp) is False:
-					tupleArray.append(tupleColUp)
+				tupleColUp = (1,i-index,j)
+				evalPixel(len(tupleArray),tupleArray,tupleColUp)
 			index = signal_processing(tempDiagTopRight,threshold,Pmatrix)
 			if(index != -1):
-				tupleDiagTR = (i-index,j+index)
-				if exists(len(tupleArray),tupleArray,tupleDiagTR) is False:
-					tupleArray.append(tupleDiagTR)
+				tupleDiagTR = (1,i-index,j+index)
+				evalPixel(len(tupleArray),tupleArray,tupleDiagTR)
 
 
 	vremeStr = (time.time() - start_time)
@@ -462,17 +446,19 @@ def main(threshold,image):
 	blackAndWhite = np.zeros(size,np.uint8)
 	#print(tupleArray)
 	for i in range(len(tupleArray)):
-		(row,col) = tupleArray[i]
-		blackAndWhite[row][col] = 255
+		(nHits,row,col) = tupleArray[i]
+		if(nHits >= hitCount):
+			blackAndWhite[row][col] = 255
 	#print(iar)
-	cv2.imwrite('Threshold-'+str(threshold)+'-TimeInSec-'+str(vremeStr)+'-'+image, blackAndWhite)
+	cv2.imwrite('Threshold-'+str(threshold)+'hitCount-'+str(hitCount)+'-TimeInSec-'+str(vremeStr)+'-'+image, blackAndWhite)
 	print("--------OpenCV write done.Image processed : %s --------------" % image)
 
 
 # za 4 slike u folderu gde je skripta sa zadatim imenom pravi slike sa ivicama za tresholdove od 50 - 5
 #for slika in ['bullseye.jpg','lena.jpg','photographer.jpg','wheel.png']:
-for slika in ['lena.jpg']:
-	for i in range(50,0,-5):
-		main(i,slika)
+for slika in ['bullseye.jpg','lena.jpg','photographer.jpg','wheel.png']:
+	for threshold in range(50,0,-5):
+		for hitCount in range(10,4,-1):
+			main(threshold,slika,hitCount)
 #test4([20,145,155,140,15,30,35,160],8,4)
 #test3()
